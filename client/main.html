@@ -1,21 +1,44 @@
 <head>
-  <title>Minimal Meteor app</title>
+  <title>Demonstrate bug with Meteor dynamic import</title>
 </head>
 
 <body>
-  <h1>Minimal Meteor app</h1>
+  <h1>Demonstrate bug with Meteor dynamic import</h1>
   <p>
-    This Meteor app uses as few Meteor packages as possible, to keep the
-    client JavaScript bundle as small as possible.
+    It appears that Meteor's version of dynamic import does not support full URLs.
+    To see the problem, view this app in a Chrome browser, with <code>More Tools > Developer Tools</code> open.
+    You will see:
   </p>
-
-  <em id="server-render-target"></em>
-
-  <h2>Learn Meteor!</h2>
-  <ul>
-    <li><a href="https://www.meteor.com/try" target="_blank">Do the Tutorial</a></li>
-    <li><a href="http://guide.meteor.com" target="_blank">Follow the Guide</a></li>
-    <li><a href="https://docs.meteor.com" target="_blank">Read the Docs</a></li>
-    <li><a href="https://forums.meteor.com" target="_blank">Discussions</a></li>
-  </ul>
+  <p>
+    <code style="white-space: pre-wrap;">
+    Greetings from /client/main.js!
+    Uncaught (in promise) Error: Cannot find module 'https://veritas-test-2019-07-02.s3.amazonaws.com/PublicData/RTK_generated.js'
+    at makeMissingError (modules-runtime.js?hash=d3c3e5d67c95f97a60888bda7373292efad3be5e:232)
+    at Module.resolve (modules-runtime.js?hash=d3c3e5d67c95f97a60888bda7373292efad3be5e:238)
+    at modules-runtime.js?hash=d3c3e5d67c95f97a60888bda7373292efad3be5e:164
+    at new Promise (<anonymous>)
+    at Module.prefetch (modules-runtime.js?hash=d3c3e5d67c95f97a60888bda7373292efad3be5e:163)
+    at Module.dynamicImport (dynamic-import.js?hash=27d6e4d87c1504b5695c8c8d1c654df1d2ea5521:39)
+    at getModule (main.js:7)
+    at main.js (main.js:12)
+    at fileEvaluate (modules-runtime.js?hash=d3c3e5d67c95f97a60888bda7373292efad3be5e:346)
+        at Module.require (modules-runtime.js?hash=d3c3e5d67c95f97a60888bda7373292efad3be5e:248)
+    </code>
+  </p>
+  <p>
+    From the backtrace, we see that we are in Meteor's implementation of <code>Module.dynamicImport</code>.
+  </p>
+  <p>
+    After that error, you can type the following into the developer tools console, and see that
+    the browser's implementation of <code>import(url)</code> works fine.
+  </p>
+  <p>
+    <code>
+      import(window.fullUrl).then(m => console.log(m))
+    </code>
+  </p>
+  <p>
+    It would be nice if you could give us a workaround, for now. Is there a way to access
+    the browser's <code>import(url)</code> from within Meteor?
+  </p>
 </body>
