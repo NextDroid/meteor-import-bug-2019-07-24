@@ -12,5 +12,5 @@ async function getModule(url) {
 }
 
 
-getModule(localUrl).then(m => console.log("local module:", m));
-getModule(fullUrl).then(m => console.log("global module:", m));
+getModule(localUrl).then(m => console.log("local module is imported correctly:", m));
+getModule(fullUrl).then(m => console.log("global module import fails in Meteor:", m));
